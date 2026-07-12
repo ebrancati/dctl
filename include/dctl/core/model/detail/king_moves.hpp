@@ -10,7 +10,7 @@
 #include <dctl/core/model/detail/tables.hpp>    // board_scan_sq_dir, board_scan_dir_sq, move_index
 #include <dctl/core/rules/type_traits.hpp>      // is_long_ranged_king_v, king_move_directions
 #include <dctl/util/type_traits.hpp>            // set_t
-#include <tabula/tuple.hpp>                     // any_of_all
+#include <tabula/tuple.hpp>                     // for_each
 #include <algorithm>                            // any_of
 #include <array>                                // array
 #include <cstddef>                              // size_t
@@ -49,11 +49,11 @@ class king_moves
         inline const static auto attacks_table = []() {
                 std::array<set_type, Board::bits()> result;
                 for (auto from_sq : mask_type::squares) {
-                        result[static_cast<std::size_t>(from_sq)] =
-                                tabula::any_of_all(king_move_directions, [&](auto dir) {
-                                        return king_move_scan<decltype(dir)>(from_sq);
-                                })
-                        ;
+                        set_type targets;
+                        tabula::for_each(king_move_directions, [&](auto dir) {
+                                targets |= king_move_scan<decltype(dir)>(from_sq);
+                        });
+                        result[static_cast<std::size_t>(from_sq)] = targets;
                 }
                 return result;
         }();
@@ -64,14 +64,14 @@ class king_moves
         {
                 assert(Board::is_onboard(from_sq));
                 if constexpr (is_long_ranged_king_v<Rules>) {
-                        return
-                                attacks_table[static_cast<std::size_t>(from_sq)] ^
-                                tabula::any_of_all(king_move_directions, [&](auto dir) {
-                                        using direction_t = decltype(dir);
-                                        auto const blockers = king_move_scan<direction_t>(from_sq) - empty;
-                                        return blockers.empty() ? blockers : blocker_and_beyond<direction_t>(find_first<direction_t>(blockers));
-                                })
-                        ;
+                        set_type blocked;
+                        tabula::for_each(king_move_directions, [&](auto dir) {
+                                using direction_t = decltype(dir);
+                                if (auto const blockers = king_move_scan<direction_t>(from_sq) - empty; !blockers.empty()) {
+                                        blocked |= blocker_and_beyond<direction_t>(find_first<direction_t>(blockers));
+                                }
+                        });
+                        return attacks_table[static_cast<std::size_t>(from_sq)] ^ blocked;
                 } else {
                         return attacks_table[static_cast<std::size_t>(from_sq)] & empty;
                 }
