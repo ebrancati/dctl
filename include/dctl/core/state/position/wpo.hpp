@@ -61,17 +61,17 @@ public:
                 }
 
                 if (c == color::white) {
-                        m_white.pop(a.from());
-                        m_white.add(a.dest());
+                        m_white.erase(a.from());
+                        m_white.insert(a.dest());
                 }
                 if (a.with() == piece::pawn) {
-                        m_pawns.pop(a.from());
+                        m_pawns.erase(a.from());
                 }
                 if (a.into() == piece::pawn) {
-                        m_pawns.add(a.dest());
+                        m_pawns.insert(a.dest());
                 }
-                m_occup.pop(a.from());
-                m_occup.add(a.dest());
+                m_occup.erase(a.from());
+                m_occup.insert(a.dest());
         }
 
         [[nodiscard]] constexpr auto make(auto c, auto const& a) noexcept
@@ -86,17 +86,17 @@ public:
                 }
 
                 if constexpr (c == white_c) {
-                        m_white.pop(a.from());
-                        m_white.add(a.dest());
+                        m_white.erase(a.from());
+                        m_white.insert(a.dest());
                 }
                 if (a.with() == piece::pawn) {
-                        m_pawns.pop(a.from());
+                        m_pawns.erase(a.from());
                 }
                 if (a.into() == piece::pawn) {
-                        m_pawns.add(a.dest());
+                        m_pawns.insert(a.dest());
                 }
-                m_occup.pop(a.from());
-                m_occup.add(a.dest());
+                m_occup.erase(a.from());
+                m_occup.insert(a.dest());
         }
 
         [[nodiscard]] constexpr auto pieces(color c) const noexcept

@@ -49,7 +49,7 @@ public:
                 tabula::for_each(pawn_move_directions, [&](auto dir) {
                         using direction_t = decltype(dir);
                         for (auto dest_sq : move_dest<Board, direction_t>{}(pawns, empty)) {
-                                actions.emplace_back(prev<Board, direction_t>{}(dest_sq), dest_sq, mask_type::promotion(Side).contains(dest_sq));
+                                actions.emplace_back(prev<Board, direction_t>{}(static_cast<int>(dest_sq)), static_cast<int>(dest_sq), mask_type::promotion(Side).contains(dest_sq));
                         }
                 });
         }

@@ -9,6 +9,7 @@
 #include <dctl/egdb/binomial.hpp>       // choose
 #include <dctl/util/type_traits.hpp>    // board_t, set_t
 #include <cassert>                      // assert
+#include <cstddef>                      // size_t
 #include <cstdint>                      // int64_t
 #include <numeric>                      // accumulate
 #include <optional>                     // nullopt, optional
@@ -25,7 +26,7 @@ template<class IntSet, class UnaryFunction>
 auto reverse_colex_rank_combination(IntSet const& is, UnaryFunction fun)
 {
         return std::accumulate(is.rbegin(), is.rend(), 0LL, [&, i = 1](auto const result, auto const sq) mutable {
-                return result + choose(fun(sq), i++);
+                return result + choose(fun(static_cast<int>(sq)), i++);
         });
 }
 
@@ -33,7 +34,7 @@ template<class IntSet, class UnaryFunction>
 auto colex_rank_combination(IntSet const& is, UnaryFunction fun)
 {
         return std::accumulate(is.begin(), is.end(), 0LL, [&, i = 1](auto const result, auto const sq) mutable {
-                return result + choose(fun(sq), i++);
+                return result + choose(fun(static_cast<int>(sq)), i++);
         });
 }
 
@@ -47,7 +48,7 @@ auto colex_unrank_combination(int64_t index, int const N, int const K, UnaryFunc
                 while (choose(sq, i) > index) {
                         --sq;
                 }
-                is.add(fun(sq));
+                is.insert(static_cast<std::size_t>(fun(sq)));
         }
         assert(static_cast<int>(is.size()) == K);
         return is;

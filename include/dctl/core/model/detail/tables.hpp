@@ -28,7 +28,7 @@ struct scan
         {
                 assert(Board::is_onboard(from));
                 auto const is_within = [&](auto sq) {
-                        return Board::is_onboard(sq) && propagator.contains(sq);
+                        return Board::is_onboard(sq) && propagator.contains(static_cast<std::size_t>(sq));
                 };
                 auto const is_valid = [&](auto sq) {
                         return is_within(sq) && (IncludesEdge || is_within(next<Board, Direction>{}(sq)));
@@ -39,12 +39,12 @@ struct scan
                 set_type targets;
                 if constexpr (IsLongRanged) {
                         while (is_valid(from)) {
-                                targets.add(from);
+                                targets.insert(static_cast<std::size_t>(from));
                                 advance<Board, Direction>{}(from);
                         }
                 } else {
                         if (is_valid(from)) {
-                                targets.add(from);
+                                targets.insert(static_cast<std::size_t>(from));
                         }
                 }
                 return targets;
@@ -59,10 +59,10 @@ class board_scan_sq_dir
                 using  set_type = set_t<mask_type>;
                 std::array<std::array<set_type, std::tuple_size_v<Directions>>, Board::bits()> result;
                 for (auto sq : mask_type::squares) {
-                        result[static_cast<std::size_t>(sq)] =
+                        result[sq] =
                                 xstd::array_from_types<Directions>{}([=](auto dir) {
                                         using direction_t = decltype(dir);
-                                        return scan<Board, direction_t, IsLongRanged, IncludesFrom, IncludesEdge>{}(sq, mask_type::squares);
+                                        return scan<Board, direction_t, IsLongRanged, IncludesFrom, IncludesEdge>{}(static_cast<int>(sq), mask_type::squares);
                                 })
                         ;
                 }
@@ -85,8 +85,8 @@ class board_scan_dir_sq
                         using  set_type = set_t<mask_type>;
                         std::array<set_type, Board::bits()> result;
                         for (auto sq : mask_type::squares) {
-                                result[static_cast<std::size_t>(sq)] =
-                                        scan<Board, direction_t, IsLongRanged, IncludesFrom, IncludesEdge>{}(sq, mask_type::squares)
+                                result[sq] =
+                                        scan<Board, direction_t, IsLongRanged, IncludesFrom, IncludesEdge>{}(static_cast<int>(sq), mask_type::squares)
                                 ;
                         }
                         return result;

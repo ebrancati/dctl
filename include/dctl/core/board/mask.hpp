@@ -10,6 +10,7 @@
 #include <xstd/bit_set.hpp>                     // bit_set
 #include <boost/integer.hpp>                    // uint_value_t
 #include <array>                                // array
+#include <cstddef>                              // size_t
 #include <utility>                              // to_underlying
 
 namespace dctl::core {
@@ -18,13 +19,13 @@ template<class Board>
 class basic_mask
 {
 public:
-        using    set_type = xstd::bit_set_aligned<int, Board::bits()>;
+        using    set_type = xstd::aligned::bit_set<Board::bits()>;
         using square_type = typename boost::uint_value_t<set_type::max_size()>::least;
 
         static constexpr auto squares = []() {
                 set_type table;
                 for (auto sq = 0; sq < Board::size(); ++sq) {
-                        table.add(Board::embedding0(sq));
+                        table.insert(static_cast<std::size_t>(Board::embedding0(sq)));
                 }
                 return table;
         }();
@@ -35,8 +36,8 @@ private:
         {
                 set_type filter;
                 for (auto const n : squares) {
-                        if (pred(Board::numeric0(n))) {
-                                filter.add(n);
+                        if (pred(Board::numeric0(static_cast<int>(n)))) {
+                                filter.insert(n);
                         }
                 }
                 return filter;

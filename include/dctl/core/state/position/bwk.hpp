@@ -55,13 +55,13 @@ public:
                         m_kings -= a.captured_pieces();
                 }
 
-                pieces(c).pop(a.from());
-                pieces(c).add(a.dest());
+                pieces(c).erase(a.from());
+                pieces(c).insert(a.dest());
                 if (a.with() == piece::king) {
-                        m_kings.pop(a.from());
-                        m_kings.add(a.dest());
+                        m_kings.erase(a.from());
+                        m_kings.insert(a.dest());
                 } else if (a.into() == piece::king) {
-                        m_kings.add(a.dest());
+                        m_kings.insert(a.dest());
                 }
         }
 

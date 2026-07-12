@@ -55,13 +55,13 @@ struct read
                 for (auto const sq : mask_type::squares) {
                         sstr >> ch;
                         if (std::islower(ch) && ch == std::tolower(Token::black)) {
-                                by_color_piece[0][0].add(sq);
+                                by_color_piece[0][0].insert(sq);
                         } else if (std::isupper(ch) && ch == std::toupper(Token::black)) {
-                                by_color_piece[0][1].add(sq);
+                                by_color_piece[0][1].insert(sq);
                         } else if (std::islower(ch) && ch == std::tolower(Token::white)) {
-                                by_color_piece[1][0].add(sq);
+                                by_color_piece[1][0].insert(sq);
                         } else if (std::isupper(ch) && ch == std::toupper(Token::white)) {
-                                by_color_piece[1][1].add(sq);
+                                by_color_piece[1][1].insert(sq);
                         } else if (ch != Token::empty) {
                                 assert(false);
                         }

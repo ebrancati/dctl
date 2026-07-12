@@ -51,9 +51,9 @@ template<class Direction>
 [[nodiscard]] constexpr auto find_first(auto const& set) noexcept
 {
         if constexpr (is_left_shift_v<Direction>) {
-                return set.front();
+                return static_cast<int>(set.front());
         } else {
-                return set.back();
+                return static_cast<int>(set.back());
         }
 }
 

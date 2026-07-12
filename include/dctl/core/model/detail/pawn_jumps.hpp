@@ -18,6 +18,7 @@
 #include <dctl/util/type_traits.hpp>                    // action_t, board_t, rules_t, set_t
 #include <tabula/tuple.hpp>
 #include <cassert>                                      // assert
+#include <cstddef>                                      // size_t
 #include <functional>                                   // bit_or, logical_or
 #include <iterator>                                     // next
 #include <type_traits>                                  // bool_constant
@@ -55,8 +56,8 @@ public:
                 tabula::for_each(pawn_jump_directions, [&](auto dir) {
                         using direction_t = decltype(dir);
                         for (auto from_sq : jump_from<board_type, direction_t>{}(builder.pieces(color_c<Side>, pawn_c), builder.targets(), builder.pieces(empty_c))) {
-                                raii::lift guard2{from_sq, builder};
-                                capture<direction_t>(next<board_type, direction_t, 2>{}(from_sq), builder);
+                                raii::lift guard2{static_cast<int>(from_sq), builder};
+                                capture<direction_t>(next<board_type, direction_t, 2>{}(static_cast<int>(from_sq)), builder);
                         }
                 });
         }
@@ -67,7 +68,7 @@ private:
         {
                 raii::capture guard1{prev<board_type, Direction>{}(sq), builder};
                 if constexpr (is_passing_promotion_v<rules_type>) {
-                        if (mask_type::promotion(Side).contains(sq)) {
+                        if (mask_type::promotion(Side).contains(static_cast<std::size_t>(sq))) {
                                 raii::king_targets guard2{builder};
                                 if (!king_jumps::template next_target_passing_promotion<Direction>(sq, builder)) {
                                         builder.finalize(sq, piece::king);
@@ -78,7 +79,7 @@ private:
                         }
                 } else {
                         if (next_target<Direction>(sq, builder)) { return; }
-                        builder.finalize(sq, mask_type::promotion(Side).contains(sq) ? piece::king : piece::pawn);
+                        builder.finalize(sq, mask_type::promotion(Side).contains(static_cast<std::size_t>(sq)) ? piece::king : piece::pawn);
                 }
         }
 
@@ -91,7 +92,7 @@ private:
 
                 return tabula::any_of_all(tabula::remove_if(pawn_jump_directions, is_reverse), [&](auto dir) {
                         using direction_t = decltype(dir);
-                        if (!jump_from<board_type, direction_t>{}(builder.targets(), builder.pieces(empty_c)).contains(sq)) { return false; }
+                        if (!jump_from<board_type, direction_t>{}(builder.targets(), builder.pieces(empty_c)).contains(static_cast<std::size_t>(sq))) { return false; }
                         capture<direction_t>(next<board_type, direction_t, 2>{}(sq), builder);
                         return true;
                 });

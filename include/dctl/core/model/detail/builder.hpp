@@ -12,6 +12,7 @@
 #include <algorithm>                            // none_of
 #include <cassert>                              // assert
 #include <concepts>                             // same_as
+#include <cstddef>                              // size_t
 #include <iterator>                             // begin, end, prev
 
 namespace dctl::core::detail {
@@ -56,26 +57,26 @@ public:
         constexpr auto lift(int const sq) noexcept
         {
                 m_candidate_action.from(sq);
-                m_empty.add(sq);
+                m_empty.insert(static_cast<std::size_t>(sq));
         }
 
         constexpr auto drop(int const sq) noexcept
         {
-                m_empty.pop(sq);
+                m_empty.erase(static_cast<std::size_t>(sq));
         }
 
         constexpr auto capture(int const sq) noexcept
         {
                 m_candidate_action.capture(sq, is_king(sq));
                 if constexpr (is_passing_capture_v<rules_type>) {
-                        m_empty.add(sq);
+                        m_empty.insert(static_cast<std::size_t>(sq));
                 }
         }
 
         constexpr auto release(int const sq)
         {
                 if constexpr (is_passing_capture_v<rules_type>) {
-                        m_empty.pop(sq);
+                        m_empty.erase(static_cast<std::size_t>(sq));
                 }
                 m_candidate_action.release(sq, is_king(sq));
         }
@@ -127,7 +128,7 @@ public:
 
         constexpr auto is_last_jumped_king(int const sq) const noexcept
         {
-                return m_state.pieces(king_c).contains(sq);
+                return m_state.pieces(king_c).contains(static_cast<std::size_t>(sq));
         }
 
         constexpr auto with() const noexcept
@@ -153,7 +154,7 @@ public:
 private:
         constexpr auto is_king(int sq) const noexcept
         {
-                return m_state.pieces(king_c).contains(sq);
+                return m_state.pieces(king_c).contains(static_cast<std::size_t>(sq));
         }
 
         constexpr auto precedence_duplicates() const noexcept

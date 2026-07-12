@@ -58,10 +58,10 @@ public:
                         pieces(king_c) -= a.captured_pieces();
                 }
 
-                pieces(c).pop(a.from());
-                pieces(c).add(a.dest());
-                pieces(a.with()).pop(a.from());
-                pieces(a.into()).add(a.dest());
+                pieces(c).erase(a.from());
+                pieces(c).insert(a.dest());
+                pieces(a.with()).erase(a.from());
+                pieces(a.into()).insert(a.dest());
 
                 m_empty = mask_type::squares ^ (pieces(black_c) | pieces(white_c));
         }

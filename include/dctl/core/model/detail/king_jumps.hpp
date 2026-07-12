@@ -20,6 +20,7 @@
 #include <tabula/tuple.hpp>
 #include <algorithm>                            // any_of
 #include <cassert>                              // assert
+#include <cstddef>                              // size_t
 #include <functional>                           // bit_or, logical_or
 #include <type_traits>                          // bool_constant
 
@@ -44,10 +45,10 @@ public:
                         return tabula::any_of(king_jump_directions, [&](auto dir) {
                                 using direction_t = decltype(dir);
                                 if constexpr (is_long_ranged_king_v<rules_type>) {
-                                        auto const blockers = king_jump<rules_type, board_type, direction_t>(from_sq, empty);
+                                        auto const blockers = king_jump<rules_type, board_type, direction_t>(static_cast<int>(from_sq), empty);
                                         if (blockers.empty()) { return false; }
                                         auto const first = find_first<direction_t>(blockers);
-                                        return jump_targets<board_type, direction_t>{}(targets, empty).contains(first);
+                                        return jump_targets<board_type, direction_t>{}(targets, empty).contains(static_cast<std::size_t>(first));
                                 } else {
                                         return jump_from<board_type, direction_t>{}(targets, empty).contains(from_sq);
                                 }
@@ -60,18 +61,18 @@ public:
                 builder.with(piece::king);
                 builder.into(piece::king);
                 for (auto from_sq : builder.pieces(color_c<Side>, king_c)) {
-                        raii::lift lift_guard{from_sq, builder};
+                        raii::lift lift_guard{static_cast<int>(from_sq), builder};
                         tabula::for_each(king_jump_directions, [&](auto dir) {
                                 using direction_t = decltype(dir);
                                 if constexpr (is_long_ranged_king_v<rules_type>) {
-                                        auto const blockers = king_jump<rules_type, board_type, direction_t>(from_sq, builder.pieces(empty_c));
+                                        auto const blockers = king_jump<rules_type, board_type, direction_t>(static_cast<int>(from_sq), builder.pieces(empty_c));
                                         if (blockers.empty()) { return; }
                                         auto const first = find_first<direction_t>(blockers);
-                                        if (!jump_targets<board_type, direction_t>{}(builder.targets(), builder.pieces(empty_c)).contains(first)) { return; }
+                                        if (!jump_targets<board_type, direction_t>{}(builder.targets(), builder.pieces(empty_c)).contains(static_cast<std::size_t>(first))) { return; }
                                         capture<direction_t>(next<board_type, direction_t>{}(first), builder);
                                 } else {
                                         if (!jump_from<board_type, direction_t>{}(builder.targets(), builder.pieces(empty_c)).contains(from_sq)) { return; }
-                                        capture<direction_t>(next<board_type, direction_t, 2>{}(from_sq), builder);
+                                        capture<direction_t>(next<board_type, direction_t, 2>{}(static_cast<int>(from_sq)), builder);
                                 }
                         });
                 }
@@ -160,10 +161,10 @@ private:
                                 auto const blockers = king_jump<rules_type, board_type, direction_t>(sq, builder.pieces(empty_c));
                                 if (blockers.empty()) { return false; }
                                 auto const first = find_first<direction_t>(blockers);
-                                if (!jump_targets<board_type, direction_t>{}(builder.targets(), builder.pieces(empty_c)).contains(first)) { return false; }
+                                if (!jump_targets<board_type, direction_t>{}(builder.targets(), builder.pieces(empty_c)).contains(static_cast<std::size_t>(first))) { return false; }
                                 capture<direction_t>(next<board_type, direction_t>{}(first), builder);
                         } else {
-                                if (!jump_from<board_type, direction_t>{}(builder.targets(), builder.pieces(empty_c)).contains(sq)) { return false; }
+                                if (!jump_from<board_type, direction_t>{}(builder.targets(), builder.pieces(empty_c)).contains(static_cast<std::size_t>(sq))) { return false; }
                                 capture<direction_t>(next<board_type, direction_t, 2>{}(sq), builder);
                         }
                         return true;

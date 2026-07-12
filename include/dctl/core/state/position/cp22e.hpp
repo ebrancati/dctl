@@ -61,10 +61,10 @@ public:
                         m_empty ^= a.captured_pieces();
                 }
 
-                pieces(c, a.with()).pop(a.from());
-                pieces(c, a.into()).add(a.dest());
-                m_empty.add(a.from());
-                m_empty.pop(a.dest());
+                pieces(c, a.with()).erase(a.from());
+                pieces(c, a.into()).insert(a.dest());
+                m_empty.insert(a.from());
+                m_empty.erase(a.dest());
         }
 
         [[nodiscard]] constexpr auto pieces(color c) const noexcept

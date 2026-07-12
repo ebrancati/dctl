@@ -7,6 +7,7 @@
 
 #include <dctl/core/state/color.hpp>    // black_c, white_c
 #include <dctl/core/state/piece.hpp>    // king_c
+#include <cstddef>                      // size_t
 #include <utility>                      // to_underlying
 
 namespace dctl::core {
@@ -14,14 +15,14 @@ namespace dctl::core {
 template<class Token, class Position>
 constexpr auto content(Position const& p, int const n) noexcept
 {
-        if (p.pieces(black_c).contains(n)) {
-                if (p.pieces(king_c).contains(n)) {
+        if (p.pieces(black_c).contains(static_cast<std::size_t>(n))) {
+                if (p.pieces(king_c).contains(static_cast<std::size_t>(n))) {
                         return Token::kings[std::to_underlying(black_c())];     // black king
                 } else {
                         return Token::pawns[std::to_underlying(black_c())];     // black pawn
                 }
-        } else if (p.pieces(white_c).contains(n)) {
-                if (p.pieces(king_c).contains(n)) {
+        } else if (p.pieces(white_c).contains(static_cast<std::size_t>(n))) {
+                if (p.pieces(king_c).contains(static_cast<std::size_t>(n))) {
                         return Token::kings[std::to_underlying(white_c())];     // white king
                 } else {
                         return Token::pawns[std::to_underlying(white_c())];     // white pawn

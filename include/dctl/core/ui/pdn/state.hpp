@@ -80,7 +80,7 @@ struct read
                                         sstr >> sq;                             // read square
                                         //assert(Board::is_valid(sq - 1));
                                         auto b = Board::embedding1(sq);         // convert square to bit
-                                        by_color_piece[std::to_underlying(setup_color)][std::to_underlying(setup_piece)].add(b);
+                                        by_color_piece[std::to_underlying(setup_color)][std::to_underlying(setup_piece)].insert(static_cast<std::size_t>(b));
                                 }
                                 setup_piece = piece::pawn;
                                 break;
@@ -112,7 +112,7 @@ struct write
                                 if (s.pieces(king_c).contains(sq)) {
                                         sstr << Token::king;                            // king tag
                                 }
-                                sstr << board_type::numeric1(sq);                       // square number
+                                sstr << board_type::numeric1(static_cast<int>(sq));     // square number
                                 //if (p.is_counted(c) && p.index(c) == sq)
                                 //        sstr << "^" << p.count(c);
                                 if (++n != bs.size()) {                                 // still pieces remaining

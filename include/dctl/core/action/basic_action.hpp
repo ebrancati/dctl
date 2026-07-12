@@ -11,6 +11,7 @@
 #include <dctl/util/type_traits.hpp>            // set_t, square_t
 #include <xstd/type_traits.hpp>                 // optional_type
 #include <cassert>                              // assert
+#include <cstddef>                              // size_t
 
 namespace dctl::core {
 
@@ -90,21 +91,21 @@ public:
                                         ++m_num_captured_kings;
                                 }
                                 if constexpr (is_ordering_precedence_v<Rules>) {
-                                        m_piece_order.add(reverse_index());
+                                        m_piece_order.insert(static_cast<std::size_t>(reverse_index()));
                                 }
                         }
                 }
-                m_captured_pieces.add(sq);
+                m_captured_pieces.insert(static_cast<std::size_t>(sq));
         }
 
         [[nodiscard]] constexpr auto release(int sq, bool is_king [[maybe_unused]]) noexcept
         {
                 assert(board_type::is_onboard(sq));
-                m_captured_pieces.pop(sq);
+                m_captured_pieces.erase(static_cast<std::size_t>(sq));
                 if constexpr (is_contents_precedence_v<rules_type> || is_ordering_precedence_v<rules_type>) {
                         if (is_king) {
                                 if constexpr (is_ordering_precedence_v<Rules>) {
-                                        m_piece_order.pop(reverse_index());
+                                        m_piece_order.erase(static_cast<std::size_t>(reverse_index()));
                                 }
                                 if constexpr (is_contents_precedence_v<Rules>) {
                                         --m_num_captured_kings;

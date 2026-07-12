@@ -51,9 +51,9 @@ class king_moves
                 for (auto from_sq : mask_type::squares) {
                         set_type targets;
                         tabula::for_each(king_move_directions, [&](auto dir) {
-                                targets |= king_move_scan<decltype(dir)>(from_sq);
+                                targets |= king_move_scan<decltype(dir)>(static_cast<int>(from_sq));
                         });
-                        result[static_cast<std::size_t>(from_sq)] = targets;
+                        result[from_sq] = targets;
                 }
                 return result;
         }();
@@ -80,22 +80,22 @@ public:
         [[nodiscard]] static constexpr auto detect(set_type const& kings, set_type const& empty) noexcept
         {
                 return std::ranges::any_of(kings, [&](auto from_sq) {
-                        return !attacks(from_sq, empty).empty();
+                        return !attacks(static_cast<int>(from_sq), empty).empty();
                 });
         }
 
         [[nodiscard]] static constexpr auto count(set_type const& kings, set_type const& empty) noexcept
         {
                 return std::accumulate(kings.begin(), kings.end(), 0, [&](auto sum, auto from_sq) {
-                        return sum + static_cast<int>(attacks(from_sq, empty).size());
+                        return sum + static_cast<int>(attacks(static_cast<int>(from_sq), empty).size());
                 });
         }
 
         static constexpr auto generate(set_type const& kings, set_type const& empty, auto& actions) noexcept
         {
                 for (auto from_sq : kings) {
-                        for (auto dest_sq : attacks(from_sq, empty)) {
-                                actions.emplace_back(from_sq, dest_sq);
+                        for (auto dest_sq : attacks(static_cast<int>(from_sq), empty)) {
+                                actions.emplace_back(static_cast<int>(from_sq), static_cast<int>(dest_sq));
                         }
                 }
         }
